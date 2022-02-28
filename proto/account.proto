@@ -1,0 +1,60 @@
+syntax = "proto3";
+option go_package = "./;proto";
+package proto;
+import "player.proto";
+
+service AccountService {
+  //通过手机号查找账户
+  rpc AccountFindByPhone(AccountFindByPhoneRequest) returns (AccountFindByPhoneResponse) {}
+  //新增账户
+  rpc AccountAdd(AccountAddRequest) returns (AccountAddResponse) {}
+  //获取相应的玩家信息
+  rpc AccountFindPlayerByAccountId(AccountFindPlayerByAccountIdRequest) returns (AccountFindPlayerByAccountIdResponse) {}
+  //通过玩家id查找账户
+  rpc AccountFindByPlayerId(AccountFindByPlayerIdRequest) returns (AccountFindByPlayerIdResponse) {}
+}
+
+message AccountFindByPhoneRequest {
+  string phone = 1;
+}
+
+message AccountFindByPhoneResponse {
+  Account account = 1;
+}
+
+message AccountAddRequest {
+  Account account = 1;
+}
+
+message AccountAddResponse {
+  string accountId = 1;
+}
+
+message AccountFindPlayerByAccountIdRequest {
+  string accountId = 1;
+}
+
+message AccountFindPlayerByAccountIdResponse {
+  Player playerInfo = 1;
+}
+
+message AccountFindByPlayerIdRequest {
+  int32 playerId = 1;
+}
+
+message AccountFindByPlayerIdResponse {
+  Account account = 1;
+}
+
+
+message Account {
+  string accountId = 1;
+  int32 playerId = 2;
+  string accountName = 3;
+  string phone = 4;
+  string password = 5;
+  int64 recentLogin = 6;
+  int64 createAt = 7;
+  int64 updateAt = 8;
+  bool delete = 9;
+}
