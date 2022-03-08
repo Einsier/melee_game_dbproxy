@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-proxy
+  labels:
+    app: db-proxy
+spec:
+  replicas: 1
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: db-proxy
+  template:
+    metadata:
+      labels:
+        app: db-proxy
+    spec:
+      containers:
+        - name: db-proxy
+          image: hub.docker.com
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 1234
+              protocol: TCP
+      restartPolicy: Always
