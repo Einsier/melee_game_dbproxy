@@ -10,7 +10,7 @@ env:
   NAME: db-proxy
   VERSION: 1.0
   TKE_REGION: ap-shanghai
-  TKE_CLUSTER_ID: cls-fo122wzb
+  TKE_CLUSTER_NAME: cls-fo122wzb-100003895836-context-default 
   DB_HOST: mongodb
   DB_PORT: 27017
   DB_USER: root
@@ -52,20 +52,25 @@ jobs:
           chmod u+x ./kustomize
       # 配置kubectl客户端
       - name: Set up ~/.kube/config for connecting TKE cluster
-        uses: TencentCloud/tke-cluster-credential-action@v1
-        with:
-          secret_id: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
-          secret_key: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
-          tke_region: ${{ env.TKE_REGION }}
-          cluster_id: ${{ env.TKE_CLUSTER_ID }}
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          mkdir -p ~/.kube/config
+          echo ${{ secrets.TKE_KUBECONFIG }} > ~/.kube/config
+        # uses: TencentCloud/tke-cluster-credential-action@v1
+        # with:
+        #   secret_id: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
+        #   secret_key: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
+        #   tke_region: ${{ env.TKE_REGION }}
+        #   cluster_id: ${{ env.TKE_CLUSTER_ID }}
       # 切换集群环境
       - name: Switch to TKE context
         run: |
-          kubectl config use-context ${TKE_CLUSTER_ID}-context-default
+          ./kubectl config use-context ${{env.TKE_CLUSTER_NAME }}
       # 更新应用
       - name: Deploy To TKE
         run: |
           (cd deployments && ./../kustomize edit set image ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.NAME }}:${{ env.VERSION }})
           (cd deployments && ./../kustomize build . | kubectl -n ${{ env.NAMESPACE }} apply  -f - )
-          kubectl -n ${{ env.NAMESPACE }} rollout status deployment/${{ env.NAME }}
-          kubectl -n ${{ env.NAMESPACE }} get services -o wide
+          ./../kubectl -n ${{ env.NAMESPACE }} rollout status deployment/${{ env.NAME }}
+          ./../kubectl -n ${{ env.NAMESPACE }} get services -o wide
