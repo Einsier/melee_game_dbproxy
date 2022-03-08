@@ -1,12 +1,12 @@
 package configs
 
-const (
+var (
 	// mongodb
 	MongoPoolSize   uint64 = 100
 	DBName          string = "melee_game"
-	MongoURI        string = "mongodb://localhost:27017"
+	MongoURI        string
 	MongoURIForTest string = "mongodb://localhost:27017"
 
 	// tcp port
-	TcpPort string = ":8890"
+	TcpPort string = ":1234"
 )
