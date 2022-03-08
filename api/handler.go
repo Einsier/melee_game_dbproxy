@@ -1,6 +1,7 @@
 package api
 
 import (
+	"melee_game_dbproxy/configs"
 	"net"
 	"net/http"
 	"net/rpc"
@@ -20,7 +21,7 @@ func (h *Handler) Start() {
 	rpc.HandleHTTP()
 
 	// 端口监听
-	listen, err := net.Listen("tcp", ":1234")
+	listen, err := net.Listen("tcp", configs.TcpPort)
 	if err != nil {
 		panic(err.Error())
 	}
