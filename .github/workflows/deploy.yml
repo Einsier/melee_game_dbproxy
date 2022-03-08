@@ -54,7 +54,9 @@ jobs:
       - name: Set up ~/.kube/config for connecting TKE cluster
         run: |
           curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x ./kubectl
+          chmod +x kubectl
+          mkdir -p ~/.local/bin/kubectl
+          mv ./kubectl ~/.local/bin/kubectl
           mkdir -p ~/.kube/config
           echo ${{ secrets.TKE_KUBECONFIG }} > ~/.kube/config
         # uses: TencentCloud/tke-cluster-credential-action@v1
@@ -66,11 +68,11 @@ jobs:
       # 切换集群环境
       - name: Switch to TKE context
         run: |
-          ./kubectl config use-context ${{env.TKE_CLUSTER_NAME }}
+          ~/.local/bin/kubectl config use-context ${{env.TKE_CLUSTER_NAME }}
       # 更新应用
       - name: Deploy To TKE
         run: |
           (cd deployments && ./../kustomize edit set image ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.NAME }}:${{ env.VERSION }})
           (cd deployments && ./../kustomize build . | kubectl -n ${{ env.NAMESPACE }} apply  -f - )
-          ./../kubectl -n ${{ env.NAMESPACE }} rollout status deployment/${{ env.NAME }}
-          ./../kubectl -n ${{ env.NAMESPACE }} get services -o wide
+          ~/.local/bin/kubectl -n ${{ env.NAMESPACE }} rollout status deployment/${{ env.NAME }}
+          ~/.local/bin/kubectl -n ${{ env.NAMESPACE }} get services -o wide
