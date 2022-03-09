@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: db-proxy
-          image: dp-proxy
+          image: melee-game-dp-proxy
           imagePullPolicy: Always
           ports:
             - containerPort: 1234

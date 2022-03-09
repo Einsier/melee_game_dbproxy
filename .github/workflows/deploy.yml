@@ -14,8 +14,8 @@ env:
   DB_HOST: mongodb
   DB_PORT: 27017
   DB_USER: root
-  IMAGE_URL: hub.docker.com
   NAMESPACE: melee-game
+  IMAGE_NAME: melee-game-db-proxy
 
 jobs:
   go-fmt:
@@ -36,7 +36,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build --build-arg DB_USER=${{ env.DB_USER }} --build-arg DB_PWD=${{ secrets.DB_PWD}} \
-            --build-arg DB_HOST=${{ env.DB_HOST }} --build-arg DB_PORT=${{ env.DB_PORT }} -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.NAME }}:${{ env.VERSION }} .
+            --build-arg DB_HOST=${{ env.DB_HOST }} --build-arg DB_PORT=${{ env.DB_PORT }} -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }} .
       # 登录镜像仓库
       - name: Login Docker Hub
         run: |
@@ -44,12 +44,12 @@ jobs:
       # 推送镜像至仓库
       - name: Push image to Docker Hub
         run: |
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.NAME }}:${{ env.VERSION }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
       # 配置Kustomize
-      # - name: Set up Kustomize
-      #   run: |
-      #     curl -o kustomize --location https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
-      #     chmod u+x ./kustomize
+      - name: Set up Kustomize
+        run: |
+          curl -o kustomize --location https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+          chmod u+x ./kustomize
       # 配置kubectl客户端
       - name: Set up ~/.kube/config for connecting TKE cluster
         run: |
@@ -70,7 +70,7 @@ jobs:
       # 更新应用
       - name: Deploy To TKE
         run: |
-          (cd deployments && ./../kubectl kustomize edit set image ${{ env.NAME }}=${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.NAME }}:${{ env.VERSION }})
-          (cd deployments && ./../kubectl kustomize build . | kubectl -n ${{ env.NAMESPACE }} apply  -f - )
+          (cd deployments && ./../kustomize edit set image ${{ env.IMAGE_NAME }}=${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }})
+          (cd deployments && ./../kustomize build . | kubectl -n ${{ env.NAMESPACE }} apply  -f - )
           kubectl -n ${{ env.NAMESPACE }} rollout status deployment/${{ env.NAME }}
           kubectl -n ${{ env.NAMESPACE }} get services -o wide
