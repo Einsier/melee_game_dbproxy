@@ -46,10 +46,10 @@ jobs:
         run: |
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.NAME }}:${{ env.VERSION }}
       # 配置Kustomize
-      - name: Set up Kustomize
-        run: |
-          curl -o kustomize --location https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
-          chmod u+x ./kustomize
+      # - name: Set up Kustomize
+      #   run: |
+      #     curl -o kustomize --location https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+      #     chmod u+x ./kustomize
       # 配置kubectl客户端
       - name: Set up ~/.kube/config for connecting TKE cluster
         run: |
@@ -66,11 +66,11 @@ jobs:
       # 切换集群环境
       - name: Switch to TKE context
         run: |
-          ./kubectl config use-context ${{env.TKE_CLUSTER_NAME }}
+          kubectl config use-context ${{env.TKE_CLUSTER_NAME }}
       # 更新应用
       - name: Deploy To TKE
         run: |
-          (cd deployments && ./../kustomize edit set image ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.NAME }}:${{ env.VERSION }})
-          (cd deployments && ./../kustomize build . | kubectl -n ${{ env.NAMESPACE }} apply  -f - )
-          ./../kubectl -n ${{ env.NAMESPACE }} rollout status deployment/${{ env.NAME }}
-          ./../kubectl -n ${{ env.NAMESPACE }} get services -o wide
+          (cd deployments && ./../kubectl kustomize edit set image ${{ env.NAME }}=${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.NAME }}:${{ env.VERSION }})
+          (cd deployments && ./../kubectl kustomize build . | kubectl -n ${{ env.NAMESPACE }} apply  -f - )
+          kubectl -n ${{ env.NAMESPACE }} rollout status deployment/${{ env.NAME }}
+          kubectl -n ${{ env.NAMESPACE }} get services -o wide

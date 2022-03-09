@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: db-proxy
-          image: hub.docker.com
+          image: dp-proxy
           imagePullPolicy: Always
           ports:
             - containerPort: 1234
