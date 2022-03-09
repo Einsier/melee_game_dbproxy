@@ -18,4 +18,4 @@ ENV ENV_DB_USER=$DB_USER \
 WORKDIR  /root/go/src/github.com/einsier/ustc_melee_game
 COPY --from=builder  /root/go/src/github.com/einsier/ustc_melee_game/db-proxy .
 EXPOSE 1234/tcp
-ENTRYPOINT ./db-proxy -DBUser $ENV_DB_USER -DBPassword $ENV_DB_PWD -Host $ENV_DB_HOST -Port $ENV_DB_PORT
+ENTRYPOINT ./db-proxy -DBUser $ENV_DB_USER -DBPassword $ENV_DB_PWD -DBHost $ENV_DB_HOST -DBPort $ENV_DB_PORT
