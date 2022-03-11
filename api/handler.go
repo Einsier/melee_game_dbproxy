@@ -27,7 +27,7 @@ func (h *Handler) Start() {
 	if err != nil {
 		panic(err.Error())
 	}
+	go logrus.Info("RPC service is listening on port " + configs.TcpPort)
 	// 启动服务
 	_ = http.Serve(listen, nil)
-	go logrus.Info("RPC service is listening on port " + configs.TcpPort)
 }
