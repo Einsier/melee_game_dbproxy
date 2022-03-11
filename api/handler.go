@@ -5,6 +5,8 @@ import (
 	"net"
 	"net/http"
 	"net/rpc"
+
+	"github.com/sirupsen/logrus"
 )
 
 type Handler struct {
@@ -27,4 +29,5 @@ func (h *Handler) Start() {
 	}
 	// 启动服务
 	_ = http.Serve(listen, nil)
+	go logrus.Info("RPC service is listening on port " + configs.TcpPort)
 }

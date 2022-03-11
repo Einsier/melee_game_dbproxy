@@ -19,6 +19,7 @@ var mongoConn *MongoConn
 
 // InitMongoConn 初始化数据库连接，获取 client
 func InitMongoConn(MongoURI string) {
+	go logrus.Debug("Initializing MongoDB connection...")
 	_, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -40,6 +41,7 @@ func InitMongoConn(MongoURI string) {
 	if err != nil {
 		go logrus.Error(err)
 	}
+	go logrus.Info("Connect to " + MongoURI + "/" + configs.DBName)
 }
 
 // GetCollection 获取指定集合

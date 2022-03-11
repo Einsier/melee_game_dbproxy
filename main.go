@@ -22,13 +22,16 @@ func initParameter() {
 	flag.StringVar(&DBPort, "DBPort", "", "Port to connect to database")
 
 	flag.Parse()
-
-	configs.MongoURI = "mongodb://" + DBUser + ":" + DBPassword + "@" + DBHost + ":" + DBPort + "/" + configs.DBName
+	if DBUser != "" {
+		configs.MongoURI = "mongodb://" + DBUser + ":" + DBPassword + "@" + DBHost + ":" + DBPort
+	} else {
+		configs.MongoURI = "mongodb://" + DBHost + ":" + DBPort
+	}
 }
 
 func main() {
 	initParameter()
 	db.InitMongoConn(configs.MongoURI) //初始化数据库
 	handler := &api.Handler{}
-	go handler.Start() //启动 rpc 服务
+	handler.Start() //启动 rpc 服务
 }
