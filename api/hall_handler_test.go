@@ -2,19 +2,17 @@ package api
 
 import (
 	"log"
-	"melee_game_dbproxy/configs"
-	"melee_game_dbproxy/db"
 	"net/rpc"
 	"testing"
 	"time"
 )
 
-func TestIsAccountLegal(t *testing.T) {
-	db.InitMongoConn(configs.MongoURIForTest)
-	handler := &Handler{}
-	go handler.Start()
+var (
+	address = "127.0.0.1:1234"
+)
 
-	client, err := rpc.DialHTTP("tcp", "127.0.0.1:1234")
+func TestIsAccountLegal(t *testing.T) {
+	client, err := rpc.DialHTTP("tcp", address)
 	if err != nil {
 		log.Fatal("dialHttp error", err)
 		return
@@ -34,11 +32,7 @@ func TestIsAccountLegal(t *testing.T) {
 }
 
 func TestSearchPlayerInfo(t *testing.T) {
-	db.InitMongoConn(configs.MongoURIForTest)
-	handler := &Handler{}
-	go handler.Start()
-
-	client, err := rpc.DialHTTP("tcp", "127.0.0.1:1234")
+	client, err := rpc.DialHTTP("tcp", address)
 	if err != nil {
 		log.Fatal("dialHttp error", err)
 		return
@@ -57,11 +51,7 @@ func TestSearchPlayerInfo(t *testing.T) {
 }
 
 func TestUpdatePlayerInfo(t *testing.T) {
-	db.InitMongoConn(configs.MongoURIForTest)
-	handler := &Handler{}
-	go handler.Start()
-
-	client, err := rpc.DialHTTP("tcp", "127.0.0.1:1234")
+	client, err := rpc.DialHTTP("tcp", address)
 	if err != nil {
 		log.Fatal("dialHttp error", err)
 		return
@@ -86,11 +76,7 @@ func TestUpdatePlayerInfo(t *testing.T) {
 }
 
 func TestAddSingleGameInfo(t *testing.T) {
-	db.InitMongoConn(configs.MongoURIForTest)
-	handler := &Handler{}
-	go handler.Start()
-
-	client, err := rpc.DialHTTP("tcp", "127.0.0.1:1234")
+	client, err := rpc.DialHTTP("tcp", address)
 	if err != nil {
 		log.Fatal("dialHttp error", err)
 		return
