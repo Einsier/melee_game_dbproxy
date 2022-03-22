@@ -11,21 +11,19 @@ var (
 	//DBName string
 	DBUser     string
 	DBPassword string
-	DBHost     string
-	DBPort     string
+	DBAddr     string
 )
 
 func initParameter() {
 	flag.StringVar(&DBUser, "DBUser", "", "User name of database")
 	flag.StringVar(&DBPassword, "DBPassword", "", "Password of database user")
-	flag.StringVar(&DBHost, "DBHost", "", "IP address of database")
-	flag.StringVar(&DBPort, "DBPort", "", "Port to connect to database")
+	flag.StringVar(&DBAddr, "DBAddr", "", "address(IP:Port) of database")
 
 	flag.Parse()
 	if DBUser != "" {
-		configs.MongoURI = "mongodb://" + DBUser + ":" + DBPassword + "@" + DBHost + ":" + DBPort
+		configs.MongoURI = "mongodb://" + DBUser + ":" + DBPassword + "@" + DBAddr
 	} else {
-		configs.MongoURI = "mongodb://" + DBHost + ":" + DBPort
+		configs.MongoURI = "mongodb://" + DBAddr
 	}
 }
 
