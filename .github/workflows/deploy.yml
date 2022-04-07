@@ -12,7 +12,7 @@ env:
   TKE_REGION: ap-shanghai  #集群地区
   TKE_CLUSTER_NAME: cls-fo122wzb-100003895836-context-default  #集群上下文名称
   DB_USER: root  #数据库账户
-  DB_PWD: ${{ secrets.DB_PWD}}  #数据库密码
+  DB_PWD: ${{ secrets.DB_PWD }}  #数据库密码
   DB_ADDR: mongodb:32001  #数据库地址，内部可直接使用 service name 访问
   NAMESPACE: melee-game  #集群命名空间
   IMAGE_NAME: melee-game-db-proxy  #镜像名称
@@ -66,11 +66,12 @@ jobs:
       # 切换集群环境
       - name: Switch to TKE context
         run: |
-          kubectl config use-context ${{env.TKE_CLUSTER_NAME }}
+          kubectl config use-context ${{ env.TKE_CLUSTER_NAME }}
       # 更新应用
       - name: Deploy To TKE
         run: |
           (cd deployments && ./../kustomize edit set image ${{ env.IMAGE_NAME }}=${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }})
           (cd deployments && ./../kustomize build . | kubectl -n ${{ env.NAMESPACE }} apply  -f - )
           kubectl -n ${{ env.NAMESPACE }} rollout status deployment/${{ env.NAME }}
+          kubectl -n ${{ env.NAMESPACE }} rollout restart deployment/${{ env.NAME }}
           kubectl -n ${{ env.NAMESPACE }} get services -o wide
